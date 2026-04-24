@@ -1,5 +1,6 @@
 
 import cv2
+import time
 import torch
 import torchvision
 from model import YOLO
@@ -17,7 +18,10 @@ if __name__ == "__main__":
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             image = torch.tensor(image, dtype=torch.uint8)
             image = image.permute((2, 0, 1))[None]
+            start_time = time.perf_counter()
             output = yolo(image.cuda() / 255).cpu()[0]
+            end_time = time.perf_counter()
+            fps = 1 / (end_time - start_time)
             scores = torch.amax(output[4:], 0).sigmoid().flatten().numpy()
             indices = torch.argmax(output[4:], 0).flatten().numpy()
             labels = [yolo.labels[i] for i in indices]
@@ -37,6 +41,7 @@ if __name__ == "__main__":
                     fill_labels=True)
             image = image.permute((1, 2, 0))
             image = cv2.cvtColor(image.numpy(), cv2.COLOR_RGB2BGR)
+            cv2.putText(image, f"{fps:.1f} fps", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (1, 1, 1), 2)
             cv2.imshow("Frame", image)
             cv2.waitKey(20)
     video.release()
