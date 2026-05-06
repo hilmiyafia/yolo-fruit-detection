@@ -20,8 +20,7 @@ class Generator:
 
 class Predictor:
 
-    def __init__(self):
-        labels = ["apple", "banana", "orange", "watermelon"]
+    def __init__(self, labels):
         self.yolo = YOLO(labels).cuda()
         self.yolo.load_state_dict(torch.load("checkpoint.pt"))
         self.yolo.eval()
@@ -123,11 +122,16 @@ IMAGE_PATH = "../dataset/yolo"
 
 if __name__ == "__main__":
     generator = Generator(BACKGROUND_PATH, IMAGE_PATH)
-    predictor = Predictor()
+    predictor = Predictor(generator.dataset.labels)
     map_scores = []
     for i in range(10):
         thresh = 0.5 + 0.05 * i
-        map_score = calc_map(generator.get, predictor.predict, 100, 4, thresh)
+        map_score = calc_map(
+            generator.get,
+            predictor.predict, 
+            1000, 
+            len(generator.dataset.labels), 
+            thresh)
         map_scores.append(map_score)
         print(f"mAP@{thresh:.2f} is {map_score:.2f}")
     average = sum(map_scores) / len(map_scores)

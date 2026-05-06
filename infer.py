@@ -41,8 +41,15 @@ if __name__ == "__main__":
                     fill_labels=True)
             image = image.permute((1, 2, 0))
             image = cv2.cvtColor(image.numpy(), cv2.COLOR_RGB2BGR)
-            cv2.putText(image, f"{fps:.1f} fps", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (1, 1, 1), 2)
+            cv2.putText(
+                image, 
+                text=f"Yolo inference speed: {fps:.1f} fps", 
+                org=(20, 40), 
+                fontFace=cv2.FONT_HERSHEY_SIMPLEX, 
+                fontScale=0.7, 
+                color=(1, 1, 1), 
+                thickness=2)
             cv2.imshow("Frame", image)
-            cv2.waitKey(20)
+            cv2.waitKey(10)
     video.release()
     cv2.waitKey()
