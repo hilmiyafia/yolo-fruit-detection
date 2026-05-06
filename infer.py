@@ -11,6 +11,7 @@ if __name__ == "__main__":
     yolo.load_state_dict(torch.load("checkpoint.pt"))
     video = cv2.VideoCapture("video.mp4")
     yolo = yolo.eval()
+    smoothed = 0
     with torch.no_grad():
         while True:
             retval, image = video.read()
@@ -21,7 +22,8 @@ if __name__ == "__main__":
             start_time = time.perf_counter()
             output = yolo(image.cuda() / 255).cpu()[0]
             end_time = time.perf_counter()
-            fps = 1 / (end_time - start_time)
+            elapsed = (end_time - start_time) * 1000
+            smoothed = smoothed * 0.99 + elapsed * 0.01
             scores = torch.amax(output[4:], 0).sigmoid().flatten().numpy()
             indices = torch.argmax(output[4:], 0).flatten().numpy()
             labels = [yolo.labels[i] for i in indices]
@@ -43,7 +45,7 @@ if __name__ == "__main__":
             image = cv2.cvtColor(image.numpy(), cv2.COLOR_RGB2BGR)
             cv2.putText(
                 image, 
-                text=f"Yolo inference speed: {fps:.1f} fps", 
+                text=f"Yolo inference speed: {int(smoothed)} ms", 
                 org=(20, 40), 
                 fontFace=cv2.FONT_HERSHEY_SIMPLEX, 
                 fontScale=0.7, 
