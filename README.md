@@ -3,10 +3,12 @@
 This repository contains a YOLOv8n implementation from scratch for fruit detection.
 
 Single head, no neck, anchor-free, trained to detect 4 fruits.<br>
-Input image size: 256x256 pixels.<br>
-Output grid size: 16x16 cells.<br>
-Parameter count: 3,482,403 parameters.<br>
-Training steps: 25,000 steps.
+Input image size: 3x256x256 pixels<br>
+Output grid size: 16x16 cells<br>
+Parameter count: 3,482,403 parameters<br>
+Training steps: 25,000 steps<br>
+Inference speed: ~60 fps<br>
+mAP@.5:.95: 0.99<br>
 
 ## Screenshot
 <p align="center">
